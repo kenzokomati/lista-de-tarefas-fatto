@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Lista de Tarefas</h1>
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Tarefa</th>
+                <th scope="col">Custo</th>  
+                <th scope="col">Data Limite</th>
+                <th scope="col">Reordenar</th>
+                <th scope="col">Acoes</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks %}
+            <tr data-task-id="{{ task.id }}" {% if task.task_cost >= 1000 %}class="table-warning"{% endif %}>
+                <td>{{ task.id }}</td>
+                <td>{{ task.task_name }}</td>
+                <td>R$ {{ task.task_cost }}</td>
+                <td>{{ task.task_due_date|date:"d/m/Y" }}</td>
+                <td>
+                    <form method="post" action="{% url 'reorder_task' task.id %}" class="reorder-form" style="display:inline;">
+                        {% csrf_token %}
+                        {% if not forloop.first %}
+                            <button type="submit" name="action" value="up" class="btn btn-sm" title="Mover para cima">
+                                ⬆️
+                            </button>
+                        {% endif %}
+                        {% if not forloop.last %}
+                            <button type="submit" name="action" value="down" class="btn btn-sm" title="Mover para baixo">
+                                ⬇️
+                            </button>
+                        {% endif %}
+                    </form>
+                </td>
+                <td>
+                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal{{ task.id }}">Update</button>
+                  <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ task.id }}">Delete</button>
+                </td>     
+
+            </tr>
+            
+            <div class="modal fade" id="updateModal{{ task.id }}" tabindex="-1" aria-labelledby="updateModalLabel{{ task.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="updateModalLabel{{ task.id }}">Editar Tarefa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <form method="POST" action="{% url 'update_task' task.id %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="task_name_{{ task.id }}" class="form-label">Nome da Tarefa</label>
+                        <input type="text" class="form-control" id="task_name_{{ task.id }}" name="task_name" value="{{ task.task_name }}" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="task_cost_{{ task.id }}" class="form-label">Custo (R$)</label>
+                        <input type="number" step="0.01" class="form-control" id="task_cost_{{ task.id }}" name="task_cost" value="{{ task.task_cost }}" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="task_due_date_{{ task.id }}" class="form-label">Data Limite</label>
+                        <input type="date" class="form-control" id="task_due_date_{{ task.id }}" name="task_due_date" value="{{ task.task_due_date|date:'Y-m-d' }}" required>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                      <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Delete Modal for this task -->
+                <div class="modal fade" id="deleteModal{{ task.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ task.id }}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel{{ task.id }}">Confirmação de Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        Tem certeza de que deseja excluir a tarefa "<strong>{{ task.task_name }}</strong>"?
+                      </div>  
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <a href="{% url 'delete_record' task.id %}" class="btn btn-danger">Excluir</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+            {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">Registros não encontrados.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a class="nav-link" href="{% url 'add_task' %}" style="color: white;">
+      <button class="btn btn-success">+ Adicionar Tarefa</button>
+    </a>
+</div>
+
+{% endblock %}
+
+
+
