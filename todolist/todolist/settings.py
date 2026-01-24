@@ -19,6 +19,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "lista-de-tarefas-fatto-1.onrender.com",
+    "127.0.0.1",
 ]
 
 
