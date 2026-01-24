@@ -12,17 +12,13 @@ class AddTaskForm(forms.ModelForm):
     fields = ("task_name", "task_cost", "task_due_date")
   
   def clean_task_name(self):
-    """Validate that task name is unique (excluding current instance)"""
     task_name = self.cleaned_data.get('task_name')
-    
-    # Get duplicate tasks with case-insensitive search
+
     duplicates = Task.objects.filter(task_name__iexact=task_name)
-    
-    # If editing, exclude the current task from the check
+
     if self.instance.pk:
       duplicates = duplicates.exclude(pk=self.instance.pk)
-    
-    # If any duplicates remain, raise validation error
+
     if duplicates.exists():
       raise forms.ValidationError(
         "Já existe uma tarefa com esse nome. Por favor, escolha outro nome."

@@ -1,7 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from django.db import transaction
 from django.db.models import Max
 from django.contrib import messages
 from .models import Task
@@ -58,7 +56,6 @@ def add_task(request):
                 Task.objects.aggregate(Max("view_order"))["view_order__max"] or 0
             )
             
-            # Save the form and set the order
             task = form.save(commit=False)
             task.view_order = order_last + 1
             task.save()
@@ -86,7 +83,6 @@ def update_task(request, pk):
             messages.success(request, "Tarefa editada com sucesso!")
             return redirect('home')
         else:
-            # If form has errors, still return to home (error handling in modal)
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
