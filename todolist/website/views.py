@@ -69,7 +69,7 @@ def add_task(request):
 def delete_task(request, pk):
     delete_task = Task.objects.get(id=pk)
     delete_task.delete()
-    messages.success(request, "Task Deleted Successfully...")
+    messages.success(request, "Tarefa removida com sucesso...")
     return redirect('home')
 
 
