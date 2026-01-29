@@ -51,7 +51,7 @@
                     <h5 class="modal-title" id="updateModalLabel{{ task.id }}">Editar Tarefa</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <form method="POST" action="{% url 'update_task' task.id %}">
+                  <form method="POST" novalidate action="{% url 'update_task' task.id %}">
                     {% csrf_token %}
                     <div class="modal-body">
                       <div class="mb-3">
@@ -85,7 +85,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        Tem certeza de que deseja excluir a tarefa "<strong>{{ task.task_name }}</strong>"?
+                        Tem certeza de que deseja excluir a tarefa "<strong style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;">{{ task.task_name }}</strong>"?
                       </div>  
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -106,6 +106,7 @@
       <button class="btn btn-success">+ Adicionar Tarefa</button>
     </a>
 </div>
+
 
 {% endblock %}
 
